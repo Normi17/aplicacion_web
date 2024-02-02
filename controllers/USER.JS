@@ -159,4 +159,6 @@ module.exports = {
   getLoginStatus,
   updateUser,
   updatePhoto
-};         
+};  
+
+// HOLA COMO ESTASASSS
