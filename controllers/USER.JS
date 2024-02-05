@@ -160,5 +160,3 @@ module.exports = {
   updateUser,
   updatePhoto
 };  
-
-// HOLA COMO ESTASASSS

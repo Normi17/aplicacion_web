@@ -1,5 +1,6 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken"
 
 const emailRegex: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -12,8 +13,11 @@ export interface IUser extends Document {
     url: string;
   };
   role: string;
+  isVerified:boolean;
   properties: Array<{ propertiesId: string }>;
-  comparePassword: (password: string) => Promise<boolean>;
+  comparePassword:(password: string) => Promise<boolean>;
+  SingAccessToken: ()=>string;
+  SignRefreshToken: ()=>string;
 }
 
 const userSchema: Schema<IUser> = new mongoose.Schema({
@@ -47,6 +51,11 @@ const userSchema: Schema<IUser> = new mongoose.Schema({
     type: String,
     default: "user",
   },
+  isVerified: {
+    type: Boolean,
+    default: false ,
+  },
+  
   properties: [
     {
       propertiesId: String,
@@ -63,11 +72,22 @@ userSchema.pre<IUser>('save', async function (next) {
   this.password = await bcrypt.hash(this.password, 10);
   return next();
 });
-
+// sing Access
+userSchema.methods.SingAccessToken=function () {
+  return jwt.sign({id:this._id}, process.env.ACCESS_TOKEN || '');
+  
+}
+//UPDATE TOKEN
+userSchema.methods.SignRefreshToken=function () {
+  return jwt.sign({id:this._id}, process.env.REFRESH_TOKEN || '');
+  
+}
 // Método para comparar contraseñas
 userSchema.methods.comparePassword = async function (enteredPassword: string): Promise<boolean> {
   return await bcrypt.compare(enteredPassword, this.password);
 };
+
+//
 
 const UserModel: Model<IUser> = mongoose.model<IUser>('User', userSchema);
 

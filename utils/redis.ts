@@ -6,7 +6,7 @@ const redisClient = ()=>{
         console.log(`redis conectaado`)
         return process.env.REDIS_URL;
     }
-    throw new Error("conexipn fallida a redis");
+    throw new Error("conexion fallida a redis");
 
 };
 export const redis = new Redis(redisClient());
